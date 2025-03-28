@@ -30,7 +30,6 @@ func main() {
 	})
 
 	mlog := middleware.MLog(
-		middleware.LogRequest,
 		middleware.LogResponse,
 		middleware.RecoverPanic,
 	)

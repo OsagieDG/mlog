@@ -13,7 +13,6 @@ import `github.com/OsagieDG/mlog/service/middleware`
 ```go
 
 mlog := middleware.MLog(
-    middleware.LogRequest,
     middleware.LogResponse,
     middleware.RecoverPanic,
 )
@@ -25,8 +24,6 @@ if err := http.ListenAndServe(listenAddr, mlog(router)); err != nil {
 }
 
 ```
-
-Check out the `example.go` file for a better understanding.
 
 ![mlog](https://github.com/OsagieDG/mlog/blob/main/blob/mlog.png)
 
