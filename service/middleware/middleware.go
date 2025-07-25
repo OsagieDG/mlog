@@ -29,7 +29,8 @@ func RecoverPanic(next http.Handler) http.Handler {
 		defer func() {
 			if err := recover(); err != nil {
 				w.Header().Set("Connection", "close")
-				http.Error(w, fmt.Sprintf("Internal Server Error: %v", err), http.StatusInternalServerError)
+				http.Error(w, fmt.Sprintf("Internal Server Error: %v", err),
+					http.StatusInternalServerError)
 			}
 		}()
 		next.ServeHTTP(w, r)
