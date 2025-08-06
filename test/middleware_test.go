@@ -11,10 +11,11 @@ import (
 )
 
 func TestLogRequest(t *testing.T) {
-	handler := middleware.LogRequest(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
-	}))
+	handler := middleware.LogRequest(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("OK"))
+		}))
 
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
 	res := httptest.NewRecorder()
@@ -31,9 +32,10 @@ func TestLogRequest(t *testing.T) {
 }
 
 func TestRecoverPanic(t *testing.T) {
-	handler := middleware.RecoverPanic(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		panic("test panic")
-	}))
+	handler := middleware.RecoverPanic(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			panic("test panic")
+		}))
 
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
 	res := httptest.NewRecorder()
@@ -45,17 +47,22 @@ func TestRecoverPanic(t *testing.T) {
 	}
 
 	if !strings.Contains(res.Body.String(), "Internal Server Error") {
-		t.Fatalf("expected body to contain 'Internal Server Error', got '%s'", res.Body.String())
+		t.Fatalf("expected body to contain 'Internal Server Error', got '%s'",
+			res.Body.String())
 	}
 }
 
 func TestResponseLogger(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
-		_, _ = io.WriteString(w, "Created")
-	})
+	handler := http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, "Created")
+		})
 
-	logger := &middleware.ResponseLogger{ResponseWriter: httptest.NewRecorder(), StatusCode: 0}
+	logger := &middleware.ResponseLogger{
+		ResponseWriter: httptest.NewRecorder(),
+		StatusCode:     0,
+	}
 
 	req := httptest.NewRequest(http.MethodPost, "/create", nil)
 	handler.ServeHTTP(logger, req)
@@ -66,10 +73,11 @@ func TestResponseLogger(t *testing.T) {
 }
 
 func TestLogResponse(t *testing.T) {
-	handler := middleware.LogResponse(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("Hello, World!"))
-	}))
+	handler := middleware.LogResponse(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("Hello, World!"))
+		}))
 
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
 	res := httptest.NewRecorder()
@@ -81,7 +89,8 @@ func TestLogResponse(t *testing.T) {
 	}
 
 	if res.Body.String() != "Hello, World!" {
-		t.Fatalf("expected body 'Hello, World!', got '%s'", res.Body.String())
+		t.Fatalf("expected body 'Hello, World!', got '%s'",
+			res.Body.String())
 	}
 }
 
@@ -90,10 +99,11 @@ func TestLogStack(t *testing.T) {
 		middleware.RecoverPanic,
 		middleware.LogRequest,
 		middleware.LogResponse,
-	)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("Stack test"))
-	}))
+	)(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("Stack test"))
+		}))
 
 	req := httptest.NewRequest(http.MethodGet, "/stack", nil)
 	res := httptest.NewRecorder()
@@ -105,6 +115,7 @@ func TestLogStack(t *testing.T) {
 	}
 
 	if res.Body.String() != "Stack test" {
-		t.Fatalf("expected body 'Stack test', got '%s'", res.Body.String())
+		t.Fatalf("expected body 'Stack test', got '%s'",
+			res.Body.String())
 	}
 }

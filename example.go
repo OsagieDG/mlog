@@ -26,7 +26,7 @@ func main() {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "You are welcome to use logStack!")
+		fmt.Fprint(w, "You are welcome to use mlog!")
 	})
 
 	mlog := middleware.MLog(
