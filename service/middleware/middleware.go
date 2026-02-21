@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
 )
@@ -77,4 +79,12 @@ func (rl *ResponseLogger) Write(data []byte) (int, error) {
 	size, err := rl.ResponseWriter.Write(data)
 	rl.Size += size
 	return size, err
+}
+
+func (rl *ResponseLogger) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	h, ok := rl.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, fmt.Errorf("response writer does not implement http.Hijacker")
+	}
+	return h.Hijack()
 }
