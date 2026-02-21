@@ -46,7 +46,7 @@ func LogResponse(next http.Handler) http.Handler {
 
 		next.ServeHTTP(rw, r)
 
-		if !rw.wroteHeader {
+		if !rw.wroteHeader && !rw.hijacked {
 			rw.WriteHeader(http.StatusOK)
 		}
 
@@ -61,10 +61,11 @@ type ResponseLogger struct {
 	StatusCode  int
 	Size        int
 	wroteHeader bool
+	hijacked    bool
 }
 
 func (rl *ResponseLogger) WriteHeader(statusCode int) {
-	if rl.wroteHeader {
+	if rl.wroteHeader || rl.hijacked {
 		return
 	}
 	rl.wroteHeader = true
@@ -87,5 +88,9 @@ func (rl *ResponseLogger) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 		return nil, nil,
 			fmt.Errorf("response writer does not implement http.Hijacker")
 	}
-	return h.Hijack()
+	conn, rw, err := h.Hijack()
+	if err == nil {
+		rl.hijacked = true
+	}
+	return conn, rw, err
 }
